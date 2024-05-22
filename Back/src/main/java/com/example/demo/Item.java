@@ -24,6 +24,6 @@ public class Item {
     private String name;
 
     @Column
-    @Min(1) @Max(1_000_000)
+    @Min(1) @Max(1000000)
     private Integer price;
 }
