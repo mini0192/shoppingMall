@@ -3,6 +3,7 @@ package com.example.demo.config.exceotion;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -50,6 +51,14 @@ public class GlobalExceptionHandler {
         List<String> errorMessage = new ArrayList<>();
         errorMessage.add(ex.getMessage());
         errorMessage.forEach(s -> log.error("Worked NotFountDataException -> " + s));
+        return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidContentTypeException.class)
+    public ResponseEntity<ErrorMessage> handlerInvalidContentTypeException(InvalidContentTypeException ex) {
+        List<String> errorMessage = new ArrayList<>();
+        errorMessage.add("API 요청시 파일 형식이 잘못되었습니다.");
+        errorMessage.forEach(s -> log.error("Worked InvalidContentTypeException -> " + s));
         return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
 }

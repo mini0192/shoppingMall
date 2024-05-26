@@ -13,14 +13,10 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ItemImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String serverFilename;
 
     @Column
     private String originFilename;
-
-    @Column
-    private String serverFilename;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="item_id")

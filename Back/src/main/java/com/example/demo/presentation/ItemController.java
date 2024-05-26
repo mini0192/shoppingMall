@@ -19,24 +19,22 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public String add(@RequestPart(value = "item") @Valid ItemDto itemDto,
+    public ShowItemDto add(@RequestPart(value = "item") @Valid ItemDto itemDto,
                       @RequestPart(value = "previewImage", required = false) List<MultipartFile> previewImage,
                       HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         log.info("Connection from: {} called ItemController.add()", ip);
-        itemService.add(itemDto, previewImage);
-        return "Successful";
+        return itemService.add(itemDto, previewImage);
     }
 
     @PutMapping("/{id}")
-    public String put(@RequestPart(value = "item") @Valid ItemDto itemDto,
+    public ShowItemDto put(@RequestPart(value = "item") @Valid ItemDto itemDto,
                       @RequestPart(value = "previewImage", required = false) List<MultipartFile> previewImage,
                       @PathVariable("id") Long id,
                       HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         log.info("Connection from: {} called ItemController.put()", ip);
-        itemService.put(id, itemDto, previewImage);
-        return "Successful";
+        return itemService.put(id, itemDto, previewImage);
     }
 
     @DeleteMapping("/{id}")
