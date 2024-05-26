@@ -1,6 +1,6 @@
 package com.example.demo.application;
 
-import com.example.demo.Item;
+import com.example.demo.domain.Item;
 import com.example.demo.infrastructure.ItemRepository;
 import com.example.demo.presentation.ItemDto;
 import org.junit.jupiter.api.DisplayName;

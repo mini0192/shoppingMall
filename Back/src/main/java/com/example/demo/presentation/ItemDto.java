@@ -1,6 +1,6 @@
 package com.example.demo.presentation;
 
-import com.example.demo.Item;
+import com.example.demo.domain.Item;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

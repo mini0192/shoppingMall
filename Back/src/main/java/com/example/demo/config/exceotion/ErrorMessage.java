@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.config.exceotion;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
