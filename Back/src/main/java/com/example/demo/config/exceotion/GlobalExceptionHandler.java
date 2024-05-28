@@ -18,6 +18,7 @@ import java.util.Set;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handlerMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
@@ -61,4 +62,13 @@ public class GlobalExceptionHandler {
         errorMessage.forEach(s -> log.error("Worked InvalidContentTypeException -> " + s));
         return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handlerIllegalArgumentException(IllegalArgumentException ex) {
+        List<String> errorMessageg = new ArrayList<>();
+        errorMessageg.add("API 요청시 인자가 잘못되었습니다.");
+        errorMessageg.forEach(s -> log.error("Worked IllegalArgumentException -> " + s));
+        return new ResponseEntity<>(new ErrorMessage(errorMessageg), HttpStatus.BAD_REQUEST);
+    }
+
 }

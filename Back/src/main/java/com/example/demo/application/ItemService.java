@@ -24,12 +24,15 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
     private final ValidationService validationService;
+    private final FileValidation fileValidation;
 
     private List<String> saveFile(Item takenParente, List<MultipartFile> takenImages) {
         
         String serverPath = "C:/Users/parkgw/Desktop/files/";
         List<String> serverFileNameList = new ArrayList<>();
-        
+
+        takenImages.forEach(fileValidation::checkImage);
+
         for(MultipartFile image : takenImages) {
             String originFileName = image.getOriginalFilename();
             String serverFileName = UUID.randomUUID().toString() + originFileName;
