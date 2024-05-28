@@ -1,6 +1,6 @@
-package com.example.demo.presentation;
+package com.example.demo.itemDomain.presentation;
 
-import com.example.demo.domain.Item;
+import com.example.demo.itemDomain.domain.Item;
 import lombok.*;
 
 import java.util.List;

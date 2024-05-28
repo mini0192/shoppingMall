@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 function ReadId() {
     const p = useParams();
     const id = p.id;
+
+    const navigate = useNavigate();
 
     const [item, setItem] = useState([])
     const [image, setImage] = useState([])
@@ -20,6 +22,17 @@ function ReadId() {
         })}, []
     );
 
+    function deleteId() {
+        axios.delete("http://localhost:8080/items/"+id)
+        .then(response => {
+            alert("삭제가 완료되었습니다.");
+            navigate("/read");
+        })
+        .catch(error => {
+            console.log(error.response.data);
+        })
+    }
+
     return (
         <div>
             <div key = { item.id } >
@@ -30,9 +43,9 @@ function ReadId() {
                 </div>
                 <h3> { item.name } </h3>
                 <p> { item.price } </p>
-                <hr/>
             </div>
             <Link key = { id } to={`/put/${ id }`}>수정</Link>
+            <input type="button" value="삭제" onClick={ deleteId }/>
         </div>
     )
 }

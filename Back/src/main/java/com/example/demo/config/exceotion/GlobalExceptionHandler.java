@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidContentTypeException.class)
     public ResponseEntity<ErrorMessage> handlerInvalidContentTypeException(InvalidContentTypeException ex) {
         List<String> errorMessage = new ArrayList<>();
-        errorMessage.add("API 요청시 파일 형식이 잘못되었습니다.");
+        errorMessage.add("파일 형식이 잘못되었습니다.");
         errorMessage.forEach(s -> log.error("Worked InvalidContentTypeException -> " + s));
         return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
@@ -66,9 +67,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> handlerIllegalArgumentException(IllegalArgumentException ex) {
         List<String> errorMessageg = new ArrayList<>();
-        errorMessageg.add("API 요청시 인자가 잘못되었습니다.");
+        errorMessageg.add("인자가 잘못되었습니다.");
         errorMessageg.forEach(s -> log.error("Worked IllegalArgumentException -> " + s));
         return new ResponseEntity<>(new ErrorMessage(errorMessageg), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public  ResponseEntity<ErrorMessage> handlerMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        List<String> errorMessageg = new ArrayList<>();
+        errorMessageg.add("파일 크기가 너무 큽니다.");
+        errorMessageg.forEach(s -> log.error("Worked MaxUploadSizeExceededException -> " + s));
+        return new ResponseEntity<>(new ErrorMessage(errorMessageg), HttpStatus.BAD_REQUEST);
+    }
 }

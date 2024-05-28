@@ -1,9 +1,8 @@
-package com.example.demo.presentation;
+package com.example.demo.itemDomain.presentation;
 
-import com.example.demo.application.ItemService;
+import com.example.demo.itemDomain.application.ItemService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ public class ItemController {
 
     @PostMapping
     public ShowItemDto add(@RequestPart(value = "item") @Valid ItemDto itemDto,
-                      @RequestPart(value = "previewImage", required = false) @NotEmpty List<MultipartFile> previewImage,
+                      @RequestPart(value = "previewImage", required = false) @NotNull List<MultipartFile> previewImage,
                       HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         log.info("Connection from: {} called ItemController.add()", ip);
@@ -31,7 +30,7 @@ public class ItemController {
 
     @PutMapping("/{id}")
     public ShowItemDto put(@RequestPart(value = "item") @Valid ItemDto itemDto,
-                      @RequestPart(value = "previewImage", required = false) @NotEmpty List<MultipartFile> previewImage,
+                      @RequestPart(value = "previewImage", required = false) List<MultipartFile> previewImage,
                       @PathVariable("id") Long id,
                       HttpServletRequest request) {
         String ip = request.getRemoteAddr();

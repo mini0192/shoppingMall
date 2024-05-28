@@ -1,4 +1,4 @@
-package com.example.demo.domain;
+package com.example.demo.itemDomain.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder

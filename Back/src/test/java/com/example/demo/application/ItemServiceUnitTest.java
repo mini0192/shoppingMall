@@ -1,8 +1,10 @@
 package com.example.demo.application;
 
-import com.example.demo.domain.Item;
-import com.example.demo.infrastructure.ItemRepository;
-import com.example.demo.presentation.ItemDto;
+import com.example.demo.itemDomain.application.ItemService;
+import com.example.demo.itemDomain.application.ValidationService;
+import com.example.demo.itemDomain.domain.Item;
+import com.example.demo.itemDomain.infrastructure.ItemRepository;
+import com.example.demo.itemDomain.presentation.ItemDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +21,11 @@ import static org.mockito.Mockito.*;
 class ItemServiceUnitTest {
 
     @Mock ItemRepository itemRepository;
-    @Mock ValidationService validationService;
+    @Mock
+    ValidationService validationService;
 
-    @InjectMocks ItemService itemService;
+    @InjectMocks
+    ItemService itemService;
 
     @Test
     @DisplayName("findAll() 모든 리스트 받아오기")

@@ -1,7 +1,8 @@
 function Home() {
     return (
         <div>
-            Home
+            <h1>WelCome My Site</h1>
+            <img src="image.jpg" width="500"></img>
         </div>
     )
 }

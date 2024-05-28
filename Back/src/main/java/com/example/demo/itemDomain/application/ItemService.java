@@ -1,13 +1,13 @@
-package com.example.demo.application;
+package com.example.demo.itemDomain.application;
 
-import com.example.demo.domain.Item;
-import com.example.demo.domain.ItemImage;
+import com.example.demo.itemDomain.domain.Item;
+import com.example.demo.itemDomain.domain.ItemImage;
 import com.example.demo.config.exceotion.FileException;
 import com.example.demo.config.exceotion.NotFountDataException;
-import com.example.demo.infrastructure.ItemImageRepository;
-import com.example.demo.infrastructure.ItemRepository;
-import com.example.demo.presentation.ItemDto;
-import com.example.demo.presentation.ShowItemDto;
+import com.example.demo.itemDomain.infrastructure.ItemImageRepository;
+import com.example.demo.itemDomain.infrastructure.ItemRepository;
+import com.example.demo.itemDomain.presentation.ItemDto;
+import com.example.demo.itemDomain.presentation.ShowItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,19 +23,20 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
+
     private final ValidationService validationService;
-    private final FileValidation fileValidation;
+    private final FileValidationService fileValidationService;
 
     private List<String> saveFile(Item takenParente, List<MultipartFile> takenImages) {
         
         String serverPath = "C:/Users/parkgw/Desktop/files/";
         List<String> serverFileNameList = new ArrayList<>();
 
-        takenImages.forEach(fileValidation::checkImage);
+        takenImages.forEach(fileValidationService::checkImage);
 
         for(MultipartFile image : takenImages) {
             String originFileName = image.getOriginalFilename();
-            String serverFileName = UUID.randomUUID().toString() + originFileName;
+            String serverFileName = UUID.randomUUID() + originFileName;
             serverFileNameList.add(serverFileName);
             
             String serverSavePath = serverPath + serverFileName;
@@ -66,7 +67,7 @@ public class ItemService {
 
         Long savedId = takenItem.getId();
         Optional<Item> rtnRepositoryItem = itemRepository.findById(savedId);
-        if(rtnRepositoryItem.isEmpty()) throw new FileException("파일 생성 실패[DB Error]");
+        if(rtnRepositoryItem.isEmpty()) throw new FileException("파일 생성 실패");
         Item savedItem = rtnRepositoryItem.get();
         
         List<String> previewImageList = saveFile(savedItem, takenPreviewImageList);
@@ -115,6 +116,13 @@ public class ItemService {
         savedItem.setName(takenItemDto.getName());
         savedItem.setPrice(takenItemDto.getPrice());
         validationService.checkValid(savedItem);
+
+        if(takenPreviewImage == null) {
+            List<String> imageList = savedItem.getImageList().stream()
+                    .map(ItemImage::getServerFilename)
+                    .toList();
+            return ShowItemDto.toShowItemDto(savedItem, imageList);
+        }
 
         List<ItemImage> retnRepositryItamImageList = itemImageRepository.findByItem_id(takenId);
         retnRepositryItamImageList.forEach(itemImageRepository::delete);

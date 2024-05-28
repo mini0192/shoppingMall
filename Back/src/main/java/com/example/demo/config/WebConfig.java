@@ -9,11 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private String viewPath = "/**";
-    private String serverPath = "file:///C:/Users/parkgw/Desktop/files/";
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String viewPath = "/**";
+        String serverPath = "file:///C:/Users/parkgw/Desktop/files/";
+
         registry.addResourceHandler(viewPath)
                 .addResourceLocations(serverPath);
     }
