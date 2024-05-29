@@ -5,8 +5,8 @@ spring:
     username: root
     password: ${password}
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       properties:
         format_sql: true

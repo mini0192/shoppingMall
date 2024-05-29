@@ -1,5 +1,7 @@
-package com.example.demo.itemDomain.domain;
+package com.example.demo.itemDomain.item.domain;
 
+import com.example.demo.config.BaseTime;
+import com.example.demo.itemDomain.comment.domain.Comment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -14,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Item {
+public class Item extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +32,6 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ItemImage> imageList;
 
-    public void clearImages() {
-        imageList.clear();
-    }
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Comment> commentList;
 }

@@ -1,4 +1,4 @@
-package com.example.demo.itemDomain.application;
+package com.example.demo.itemDomain.item.application;
 
 import com.example.demo.config.exceotion.FileException;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class FileValidationService {
+public class ImageValidationService {
     public void checkImage(MultipartFile file) {
         List<String> checkExtensionList = new ArrayList<>();
         checkExtensionList.add("png");

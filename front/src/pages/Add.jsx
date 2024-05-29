@@ -45,24 +45,17 @@ function Add() {
       }}>
       <input type="file" name="imageInput" multiple accept='image/*'
       style={{
-        gridColumnStart: "1",
-        gridColumnEnd: "2",
-
-        gridRowStart: "1",
-        gridRowEnd: "2"
+        gridColumn: "1/2",
+        gridRow: "1/2"
       }}
       onChange={(e) => {
-        console.log(e.target.files)
         setFiles(Array.from(e.target.files));
       }}/>
 
 
       <div style={{
-          gridColumnStart: "2",
-          gridColumnEnd: "3",
-        
-          gridRowStart: "1",
-          gridRowEnd: "2"
+        gridColumn: "2/3",
+        gridRow: "1/2"
         }}>
 
         <input type="text" name="name" placeholder='name'
@@ -85,11 +78,8 @@ function Add() {
       </div>
       <input type="button" value="submit" onClick={ submit }
       style={{
-        gridColumnStart: "1",
-        gridColumnEnd: "3",
-
-        gridRowStart: "2",
-        gridRowEnd: "3"
+        gridColumn: "1/3",
+        gridRow: "2/3"
       }}/>
     </div>
   );

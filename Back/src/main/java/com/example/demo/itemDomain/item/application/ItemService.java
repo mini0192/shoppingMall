@@ -1,20 +1,23 @@
-package com.example.demo.itemDomain.application;
+package com.example.demo.itemDomain.item.application;
 
-import com.example.demo.itemDomain.domain.Item;
-import com.example.demo.itemDomain.domain.ItemImage;
-import com.example.demo.config.exceotion.FileException;
+import com.example.demo.config.ValidationService;
+import com.example.demo.itemDomain.item.domain.Item;
+import com.example.demo.itemDomain.item.domain.ItemImage;
 import com.example.demo.config.exceotion.NotFountDataException;
-import com.example.demo.itemDomain.infrastructure.ItemImageRepository;
-import com.example.demo.itemDomain.infrastructure.ItemRepository;
-import com.example.demo.itemDomain.presentation.ItemDto;
-import com.example.demo.itemDomain.presentation.ShowItemDto;
+import com.example.demo.itemDomain.item.infrastructure.FileRepository;
+import com.example.demo.itemDomain.item.infrastructure.ItemImageRepository;
+import com.example.demo.itemDomain.item.infrastructure.ItemRepository;
+import com.example.demo.itemDomain.item.presentation.ItemDto;
+import com.example.demo.itemDomain.item.presentation.ShowItemDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -23,37 +26,32 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
+    private final FileRepository fileRepository;
 
     private final ValidationService validationService;
-    private final FileValidationService fileValidationService;
+    private final ImageValidationService imageValidationService;
 
+    /**
+     * 이미지 파일 저장하는 함수
+     * */
     private List<String> saveFile(Item takenParente, List<MultipartFile> takenImages) {
-        
-        String serverPath = "C:/Users/parkgw/Desktop/files/";
+
         List<String> serverFileNameList = new ArrayList<>();
 
-        takenImages.forEach(fileValidationService::checkImage);
+        takenImages.forEach(image -> {
+            imageValidationService.checkImage(image);
+            String serverFileName = fileRepository.saveFile(image);
 
-        for(MultipartFile image : takenImages) {
-            String originFileName = image.getOriginalFilename();
-            String serverFileName = UUID.randomUUID() + originFileName;
             serverFileNameList.add(serverFileName);
-            
-            String serverSavePath = serverPath + serverFileName;
-            try {
-                image.transferTo(new File(serverSavePath));
-            } catch (IOException e) {
-                throw new FileException("파일 생성 실패");
-            }
-            
+            String originFileName = image.getOriginalFilename();
+
             ItemImage itemImage = ItemImage.builder()
                     .originFilename(originFileName)
                     .serverFilename(serverFileName)
                     .item(takenParente)
                     .build();
-            
             itemImageRepository.save(itemImage);
-        }
+        });
         return serverFileNameList;
 
     }
@@ -63,39 +61,33 @@ public class ItemService {
 
         Item takenItem = ItemDto.toEntity(takenItemDto);
         validationService.checkValid(takenItem);
-        itemRepository.save(takenItem);
-
-        Long savedId = takenItem.getId();
-        Optional<Item> rtnRepositoryItem = itemRepository.findById(savedId);
-        if(rtnRepositoryItem.isEmpty()) throw new FileException("파일 생성 실패");
-        Item savedItem = rtnRepositoryItem.get();
+        Item savedItem = itemRepository.save(takenItem);
         
         List<String> previewImageList = saveFile(savedItem, takenPreviewImageList);
         return ShowItemDto.toShowItemDto(savedItem, previewImageList);
 
     }
 
-    public List<ShowItemDto> findAll() {
+    public Page<ShowItemDto> findAll(Pageable takenPageable) {
+        int page = takenPageable.getPageNumber() - 1;
+        int pageLimit = 3;
 
-        List<Item> retnRepositoryItemList = itemRepository.findAll();
-        List<ShowItemDto> giveShowItemDtoList = new ArrayList<>();
+        Page<Item> retnRepositoryItemPage = itemRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-        for(Item itemLoop : retnRepositoryItemList) {
-            List<ItemImage> itemImageList = itemLoop.getImageList();
+        return retnRepositoryItemPage.map(item -> {
+            List<ItemImage> itemImageList = item.getImageList();
             List<String> previewImageFileNameList = itemImageList.stream()
                     .map(ItemImage::getServerFilename)
                     .toList();
-            giveShowItemDtoList.add(ShowItemDto.toShowItemDto(itemLoop, previewImageFileNameList));
-        }
-
-        return giveShowItemDtoList;
+            return ShowItemDto.toShowItemDto(item, previewImageFileNameList);
+        });
 
     }
 
     public ShowItemDto findById(Long takenId) {
 
         Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 Id를 찾을 수 없습니다");
+        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다.");
         Item savedItem = retnRepositoryItem.get();
 
         List<ItemImage> itemImageList = savedItem.getImageList();
@@ -110,12 +102,14 @@ public class ItemService {
     @Transactional
     public ShowItemDto put(Long takenId, ItemDto takenItemDto, List<MultipartFile> takenPreviewImage) {
         Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 Id를 찾을 수 없습니다");
+        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다.");
         Item savedItem = retnRepositoryItem.get();
 
         savedItem.setName(takenItemDto.getName());
         savedItem.setPrice(takenItemDto.getPrice());
         validationService.checkValid(savedItem);
+
+        Item changedItem = itemRepository.save(savedItem);
 
         if(takenPreviewImage == null) {
             List<String> imageList = savedItem.getImageList().stream()
@@ -124,10 +118,8 @@ public class ItemService {
             return ShowItemDto.toShowItemDto(savedItem, imageList);
         }
 
-        List<ItemImage> retnRepositryItamImageList = itemImageRepository.findByItem_id(takenId);
-        retnRepositryItamImageList.forEach(itemImageRepository::delete);
-        itemRepository.save(savedItem);
-        List<String> previewImageFileNameList = saveFile(savedItem, takenPreviewImage);
+        itemImageRepository.deleteByItem(savedItem);
+        List<String> previewImageFileNameList = saveFile(changedItem, takenPreviewImage);
 
         return ShowItemDto.toShowItemDto(savedItem, previewImageFileNameList);
 
@@ -136,7 +128,7 @@ public class ItemService {
     @Transactional
     public void delete(Long takenId) {
         Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 Id를 찾을 수 없습니다");
+        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다");
         itemRepository.delete(retnRepositoryItem.get());
     }
 }

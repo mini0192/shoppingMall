@@ -1,4 +1,4 @@
-package com.example.demo.itemDomain.application;
+package com.example.demo.config;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
