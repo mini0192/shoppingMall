@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 public class CommentDto {
     private Long id;
-    @NotBlank
+    private String username;
     private String name;
     @NotBlank
     private String review;

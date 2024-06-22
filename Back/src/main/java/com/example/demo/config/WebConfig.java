@@ -17,15 +17,4 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler(viewPath)
                 .addResourceLocations(serverPath);
     }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registration) {
-        registration.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Authorization", "Content-Type")
-                .exposedHeaders("Custom-Header")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
 }

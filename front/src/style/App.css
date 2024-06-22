@@ -1,0 +1,21 @@
+p {
+    color: #7e7e7e;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #363636;
+    font-family: 'SCoreDream';
+    font-weight: 500; 
+    font-style: normal; 
+}
+
+* {
+    color: #363636;
+    font-family: 'SCoreDream';
+    font-weight: 300; 
+    font-style: normal;
+}
+
+textarea {
+    resize: none;
+}

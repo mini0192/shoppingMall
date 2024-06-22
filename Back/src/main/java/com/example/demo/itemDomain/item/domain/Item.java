@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Getter
-@Setter
+//@Setter
 public class Item extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +26,31 @@ public class Item extends BaseTime {
     private String name;
 
     @Column
+    @Size(min = 1, max = 100)
+    private String content;
+
+    @Column
     @Min(1) @Max(1000000)
     private Integer price;
+
+    @Column
+    private String type;
+
+    @Column
+    private String deleted;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ItemImage> imageList;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> commentList;
+
+    public void updateItem(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public void updateDeletedStatus(String deleted) {
+        this.deleted = deleted;
+    }
 }

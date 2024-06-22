@@ -1,0 +1,32 @@
+
+.paddingObj {
+    padding: 20px;
+}
+
+.marginObj, section {
+    margin: 20px;
+}
+
+.marginTopObj {
+    margin-top: 50px;
+}
+
+.marginTopObjDouble {
+    margin-top: 100px;
+}
+
+.pointColorObj {
+    color: #0dcaf0;
+}
+
+.linkObj {
+    text-decoration: none;
+}
+
+.hoverSizeUpObj {
+    transition: all 0.2s linear;
+}
+
+.hoverSizeUpObj:hover {
+    transform: scale(1.05);
+}

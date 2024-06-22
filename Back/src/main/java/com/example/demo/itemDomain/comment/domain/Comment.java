@@ -10,12 +10,15 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @Entity
 public class Comment extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column
+    @Size(min = 1, max = 10)
+    private String username;
 
     @Column
     @Size(min = 1, max = 10)
@@ -28,4 +31,8 @@ public class Comment extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="item_id")
     private Item item;
+
+    public void updateComment(String review) {
+        this.review = review;
+    }
 }

@@ -8,7 +8,7 @@ import com.example.demo.itemDomain.item.infrastructure.FileRepository;
 import com.example.demo.itemDomain.item.infrastructure.ItemImageRepository;
 import com.example.demo.itemDomain.item.infrastructure.ItemRepository;
 import com.example.demo.itemDomain.item.presentation.ItemDto;
-import com.example.demo.itemDomain.item.presentation.ShowItemDto;
+import com.example.demo.config.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,61 +52,67 @@ public class ItemService {
                     .build();
             itemImageRepository.save(itemImage);
         });
+
         return serverFileNameList;
 
     }
 
     @Transactional
-    public ShowItemDto add(ItemDto takenItemDto, List<MultipartFile> takenPreviewImageList) {
-
+    public ItemDto add(ItemDto takenItemDto, List<MultipartFile> takenPreviewImageList) {
+        takenItemDto.setDeleted(Status.FALSE.getStatus());
         Item takenItem = ItemDto.toEntity(takenItemDto);
         validationService.checkValid(takenItem);
         Item savedItem = itemRepository.save(takenItem);
         
         List<String> previewImageList = saveFile(savedItem, takenPreviewImageList);
-        return ShowItemDto.toShowItemDto(savedItem, previewImageList);
+        return ItemDto.toItemDto(savedItem, previewImageList);
 
     }
 
-    public Page<ShowItemDto> findAll(Pageable takenPageable) {
+    public Page<ItemDto> findAll(Pageable takenPageable, int takenCount, String takenDeleted) {
         int page = takenPageable.getPageNumber() - 1;
-        int pageLimit = 3;
+        int pageLimit = takenCount;
+        Page<Item> retnRepositoryItemPage;
 
-        Page<Item> retnRepositoryItemPage = itemRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        if(takenDeleted.isBlank())
+            retnRepositoryItemPage =
+                    itemRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        else
+            retnRepositoryItemPage =
+                    itemRepository.findByDeleted(takenDeleted, PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
         return retnRepositoryItemPage.map(item -> {
             List<ItemImage> itemImageList = item.getImageList();
             List<String> previewImageFileNameList = itemImageList.stream()
                     .map(ItemImage::getServerFilename)
                     .toList();
-            return ShowItemDto.toShowItemDto(item, previewImageFileNameList);
+            return ItemDto.toItemDto(item, previewImageFileNameList);
         });
 
     }
 
-    public ShowItemDto findById(Long takenId) {
+    public ItemDto findById(Long takenId) {
 
-        Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다.");
-        Item savedItem = retnRepositoryItem.get();
+        Item savedItem = itemRepository.findById(takenId)
+                .orElseThrow(() -> new NotFountDataException("해당 상품을 찾을 수 없습니다."));
+
+        if(savedItem.getDeleted().equals("true"))
+            throw new NotFountDataException("해당 상품을 찾을 수 없습니다.");
 
         List<ItemImage> itemImageList = savedItem.getImageList();
         List<String> previewImageFileNameList = itemImageList.stream()
                 .map(ItemImage::getServerFilename)
                 .toList();
 
-        return ShowItemDto.toShowItemDto(savedItem, previewImageFileNameList);
-
+        return ItemDto.toItemDto(savedItem, previewImageFileNameList);
     }
 
     @Transactional
-    public ShowItemDto put(Long takenId, ItemDto takenItemDto, List<MultipartFile> takenPreviewImage) {
-        Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다.");
-        Item savedItem = retnRepositoryItem.get();
+    public ItemDto put(Long takenId, ItemDto takenItemDto, List<MultipartFile> takenPreviewImage) {
+        Item savedItem = itemRepository.findById(takenId)
+                .orElseThrow(() -> new NotFountDataException("해당 상품을 찾을 수 없습니다."));
 
-        savedItem.setName(takenItemDto.getName());
-        savedItem.setPrice(takenItemDto.getPrice());
+        savedItem.updateItem(takenItemDto.getName(), takenItemDto.getPrice());
         validationService.checkValid(savedItem);
 
         Item changedItem = itemRepository.save(savedItem);
@@ -115,20 +121,21 @@ public class ItemService {
             List<String> imageList = savedItem.getImageList().stream()
                     .map(ItemImage::getServerFilename)
                     .toList();
-            return ShowItemDto.toShowItemDto(savedItem, imageList);
+            return ItemDto.toItemDto(savedItem, imageList);
         }
 
         itemImageRepository.deleteByItem(savedItem);
         List<String> previewImageFileNameList = saveFile(changedItem, takenPreviewImage);
 
-        return ShowItemDto.toShowItemDto(savedItem, previewImageFileNameList);
+        return ItemDto.toItemDto(savedItem, previewImageFileNameList);
 
     }
 
     @Transactional
-    public void delete(Long takenId) {
-        Optional<Item> retnRepositoryItem = itemRepository.findById(takenId);
-        if(retnRepositoryItem.isEmpty()) throw new NotFountDataException("해당 상품을 찾을 수 없습니다");
-        itemRepository.delete(retnRepositoryItem.get());
+    public void delete(Long takenId, String takenDeleted) {
+        Item savedItem = itemRepository.findById(takenId)
+                .orElseThrow(() -> new NotFountDataException("해당 상품을 찾을 수 없습니다."));
+        savedItem.updateDeletedStatus(takenDeleted);
+        itemRepository.save(savedItem);
     }
 }

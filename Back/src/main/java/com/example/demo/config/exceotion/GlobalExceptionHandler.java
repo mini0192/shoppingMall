@@ -56,27 +56,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DuplicateDataException.class)
+    public ResponseEntity<ErrorMessage> handlerDuplicateDataException(DuplicateDataException ex) {
+        List<String> errorMessage = new ArrayList<>();
+        errorMessage.add(ex.getMessage());
+        errorMessage.forEach(s -> log.error("Worked DuplicateDataException -> " + s));
+        return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidContentTypeException.class)
     public ResponseEntity<ErrorMessage> handlerInvalidContentTypeException(InvalidContentTypeException ex) {
         List<String> errorMessage = new ArrayList<>();
-        errorMessage.add("파일 형식이 잘못되었습니다.");
+        errorMessage.add("데이터 형식이 잘못되었습니다.");
         errorMessage.forEach(s -> log.error("Worked InvalidContentTypeException -> " + s));
         return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessage> handlerIllegalArgumentException(IllegalArgumentException ex) {
-        List<String> errorMessageg = new ArrayList<>();
-        errorMessageg.add("인자가 잘못되었습니다.");
-        errorMessageg.forEach(s -> log.error("Worked IllegalArgumentException -> " + s));
-        return new ResponseEntity<>(new ErrorMessage(errorMessageg), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public  ResponseEntity<ErrorMessage> handlerMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
-        List<String> errorMessageg = new ArrayList<>();
-        errorMessageg.add("파일 크기가 너무 큽니다.");
-        errorMessageg.forEach(s -> log.error("Worked MaxUploadSizeExceededException -> " + s));
-        return new ResponseEntity<>(new ErrorMessage(errorMessageg), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorMessage> handlerMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        List<String> errorMessage = new ArrayList<>();
+        errorMessage.add("파일 크기가 너무 큽니다.");
+        errorMessage.forEach(s -> log.error("Worked MaxUploadSizeExceededException -> " + s));
+        return new ResponseEntity<>(new ErrorMessage(errorMessage), HttpStatus.BAD_REQUEST);
     }
 }

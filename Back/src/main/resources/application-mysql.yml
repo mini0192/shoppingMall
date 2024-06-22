@@ -6,6 +6,7 @@ spring:
     password: ${password}
   jpa:
     show-sql: false
+    generate-ddl: true
     hibernate:
       ddl-auto: update
       properties:
