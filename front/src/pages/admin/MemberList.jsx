@@ -26,7 +26,7 @@ function MemberList() {
     }
 
     const adminMember = id => {
-        axios.put(`${Url}/member/admin/admin/${id}?admin=true`,{}, {headers})
+        axios.patch(`${Url}/member/admin/admin/${id}?admin=true`,{}, {headers})
         .then(res => {
             alert("권한 부여가 완료되었습니다.")
             getAPI(DEFULTCOUNT, pageNumber, locked)
@@ -39,7 +39,7 @@ function MemberList() {
     }
 
     const unAdminMember = id => {
-        axios.put(`${Url}/member/admin/admin/${id}?admin=false`,{}, {headers})
+        axios.patch(`${Url}/member/admin/admin/${id}?admin=false`,{}, {headers})
         .then(res => {
             alert("권한 해제가 완료되었습니다.")
             getAPI(DEFULTCOUNT, pageNumber, locked)
@@ -52,7 +52,7 @@ function MemberList() {
     }
 
     const lockMember = id => {
-        axios.put(`${Url}/member/admin/lock/${id}?lock=true`,{}, {headers})
+        axios.patch(`${Url}/member/admin/lock/${id}?lock=true`,{}, {headers})
         .then(res => {
             alert("잠금이 완료되었습니다.")
             getAPI(DEFULTCOUNT, pageNumber, locked)
@@ -65,7 +65,7 @@ function MemberList() {
     }
 
     const unLockMember = id => {
-        axios.put(`${Url}/member/admin/lock/${id}?lock=false`,{}, {headers})
+        axios.patch(`${Url}/member/admin/lock/${id}?lock=false`,{}, {headers})
         .then(res => {
             alert("잠금 해제가 완료되었습니다.")
             getAPI(DEFULTCOUNT, pageNumber, locked)
