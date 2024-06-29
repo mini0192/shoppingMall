@@ -48,7 +48,7 @@ public class AdminItemController {
         return new ResponseEntity<>(retnItemDto, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ItemDto> put(@RequestPart(value = "item") @Valid ItemDto itemDto,
                                            @RequestPart(value = "previewImage", required = false) List<MultipartFile> previewImage,
                                            @PathVariable("id") Long id,
@@ -56,7 +56,7 @@ public class AdminItemController {
         String ip = request.getRemoteAddr();
         log.info("Connection from: {} -> 상품 수정 호출", ip);
         ItemDto retnItemDto = itemService.put(id, itemDto, previewImage);
-        return new ResponseEntity<>(retnItemDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(retnItemDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

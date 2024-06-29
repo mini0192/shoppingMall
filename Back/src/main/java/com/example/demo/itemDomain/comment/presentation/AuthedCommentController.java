@@ -47,7 +47,7 @@ public class AuthedCommentController {
         log.info("Connection from: {} -> 댓글 수정 호출", ip);
         commentDto.setId(id);
         CommentDto retnCommentDto = commentService.put(commentDto);
-        return new ResponseEntity<>(retnCommentDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(retnCommentDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

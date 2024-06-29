@@ -23,7 +23,7 @@ public class AdminMemberController {
 
     private final MemberService memberService;
 
-    @PutMapping("/lock/{id}")
+    @PatchMapping("/lock/{id}")
     public ResponseEntity<String> lock(@PathVariable("id") Long id,
                                        @RequestParam("lock") @NotBlank String lock,
                                        HttpServletRequest request) throws InvalidContentTypeException {
@@ -34,7 +34,7 @@ public class AdminMemberController {
         return new ResponseEntity<>("잠금 설정이 완료되었습니다.", HttpStatus.OK);
     }
 
-    @PutMapping("/admin/{id}")
+    @PatchMapping("/admin/{id}")
     public ResponseEntity<String> admin(@PathVariable("id") Long id,
                                         @RequestParam("admin") @NotBlank String admin,
                                         HttpServletRequest request) throws InvalidContentTypeException {
