@@ -48,7 +48,7 @@ public class AdminItemController {
         return new ResponseEntity<>(retnItemDto, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ItemDto> put(@RequestPart(value = "item") @Valid ItemDto itemDto,
                                            @RequestPart(value = "previewImage", required = false) List<MultipartFile> previewImage,
                                            @PathVariable("id") Long id,
